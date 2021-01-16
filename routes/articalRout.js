@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Artical = require('../model/artical')
 const joi = require('joi')
-
+const auth = require('../middelWare/auth')
 
 const joischema = joi.object({
     title : joi.string().required().min(5).max(20),

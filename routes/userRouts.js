@@ -44,6 +44,7 @@ router.post('/api/addUser' , async (req,res)=>{
 
 router.post('/api/login' , async (req,res)=>{
     try{
+        console.log(req.body)
         //check it is right email 
         const user = await User.findOne({email : req.body.email})
         if(!user) throw new Error('Can not find this user')
@@ -58,7 +59,7 @@ router.post('/api/login' , async (req,res)=>{
         if(!token) throw new Error('Can not generat token')
 
         // send the token in the response 
-        res.header('Authorization' ,token).send(token)
+        res.header('Authorization' ,token).send({token})
 
     }
     catch(e){
