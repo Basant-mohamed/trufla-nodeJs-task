@@ -36,7 +36,7 @@ router.post('/api/addArtical', async (req,res)=>{
 router.get('/api/getAllArticals' , async (req,res)=>{
 try{
 
-    const articals = await Artical.find()
+    const articals = await Artical.find().populate('author')
     if(!articals) throw new Error('Can not find articals')
 
     res.status(200).send(articals)
@@ -52,7 +52,7 @@ catch(e){
 router.get('/api/getArticalById/:id' ,async  (req,res)=>{
     try{
 
-        const artical = await Artical.findById({_id:req.params.id})
+        const artical = await Artical.findById({_id:req.params.id}).populate('author')
         if(!artical)  throw new Error('Can not find this artical')
 
         res.status(200).send(artical)
@@ -65,7 +65,8 @@ router.get('/api/getArticalById/:id' ,async  (req,res)=>{
 /**************************** Get specific artical (by title , author or date ) ********************/
 router.get('/api/getArtical' ,async  (req,res)=>{
     try{
-        const artical = await Artical.find({$or:[{title : req.body.title},{author:req.body.author} ,{date:req.body.date}]})
+        const artical = await Artical.find({$or:[{title : req.body.title},{author:req.body.author} 
+            ,{date:req.body.date}]}).populate('author')
         if(!artical)  throw new Error('Can not find this artical')
 
         res.status(200).send(artical)
@@ -76,7 +77,7 @@ router.get('/api/getArtical' ,async  (req,res)=>{
 })
 
 /*********************************** Like certain artical *****************************/
-router.post('/api/addThumbsUp', auth , (req,res)=>{
+router.post('/api/addThumbsUp',auth, (req,res)=>{
   
     // find the artical by ID
        Artical.findOne({_id:req.body._id} ,async (err,result)=>{
