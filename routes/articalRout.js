@@ -7,21 +7,23 @@ const joi = require('joi')
 const joischema = joi.object({
     title : joi.string().required().min(5).max(20),
     body : joi.string().required().min(50),
-    date : joi.required().default(Date.now),
-
+    author : joi.string().required()
 })
 
-// add Artical 
-router.post('/addArtical', async (req,res)=>{
+/* **********************************  add Artical  ************************** */
+router.post('/api/addArtical', async (req,res)=>{
     try{
         // check the validation 
         const {error} = await joischema.validate(req.body)
         if(error) throw new Error(error.message)
 
-         await Artical.addArtical(req.body.title , req.body.body , req.body.authorId ,req.body.date ,(err,result)=>{
-             if(err) throw new Error('Can not add the artical')
-             else res.status(200).send(result)
-         })
+        // save to DB
+        const newArtical = new Artical(req.body)
+        const added = await newArtical.save()
+        if(!added) throw new Error('Can not add the artical')
+        
+        res.status(200).send(added)
+         
 
     }
     catch(e){
@@ -30,36 +32,63 @@ router.post('/addArtical', async (req,res)=>{
     }
 }) 
 
-//get all artical 
-router.get('/getArticals' , (req,res)=>{
-    Artical.getAllArticals((err,result)=>{
-        if(err) throw new Error('Can not get articals')
-        else res.status(200).send(result)
-    })
+/********************************** Get all articals **************************/
+router.get('/api/getAllArticals' , async (req,res)=>{
+try{
+
+    const articals = await Artical.find()
+    if(!articals) throw new Error('Can not find articals')
+
+    res.status(200).send(articals)
+
+}
+catch(e){
+    res.send(e.message)
+}    
 })
 
 
-// get artical by ID 
-router.get('/getArticalById/:id' , (req,res)=>{
-    Artical.getArticalById(req.params.id ,(err , result)=>{
-        if(err)  throw new Error('Can not get the artical')
-        else res.status(200).send(result)
-    })
+/********************************* Get artical by ID *********************************/
+router.get('/api/getArticalById/:id' ,async  (req,res)=>{
+    try{
+
+        const artical = await Artical.findById({_id:req.params.id})
+        if(!artical)  throw new Error('Can not find this artical')
+
+        res.status(200).send(artical)
+    }
+    catch(e){
+        res.send(e.message)
+    }
 })
 
-//add comment to given artical 
-router.post('/addComment/:articalId', auth , (req,res)=>{
-    Artical.addComment(req.body.comment,req.params.articalId,req.body.userId,(err , result)=>{
-        if(err)  throw new Error('Can not add your comment')
-        else res.status(200).send(result)
-    })
+/**************************** Get specific artical (by title , author or date ) ********************/
+router.get('/api/getArtical' ,async  (req,res)=>{
+    try{
+        const artical = await Artical.find({$or:[{title : req.body.title},{author:req.body.author} ,{date:req.body.date}]})
+        if(!artical)  throw new Error('Can not find this artical')
+
+        res.status(200).send(artical)
+    }
+    catch(e){
+        res.send(e.message)
+    }
 })
 
-//Thumbs up to a given article
-router.post('/thumbsUpArtical/:articalId', auth , (req,res)=>{
-    Artical.thumbsUpArtical(req.body.userId,req.params.articalId,(err , result)=>{
-        if(err)  throw new Error('Can not like the artical')
-        else res.status(200).send(result)
+/*********************************** Like certain artical *****************************/
+router.post('/api/addThumbsUp', auth , (req,res)=>{
+  
+    // find the artical by ID
+       Artical.findOne({_id:req.body._id} ,async (err,result)=>{
+                if(err) throw new Error('Can Not find the Artical')
+                else  {
+                    // increase the likes number with 1
+                    const updated = await Artical.findOneAndUpdate({_id:req.body._id},{likes : result.likes + 1} )
+                    if(!updated)  throw new Error('Can not like this artical')
+                    res.status(200).send({flag : 1})
+                }
+       })
+   
+   
     })
-})
 module.exports = router

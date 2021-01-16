@@ -1,25 +1,44 @@
+const mongoose = require('mongoose')
 
-const pool = require('../db/mysql')
-var Artical={
-   getAllArticals(callBack) { 
-       return pool.query('Call get_all_articals()',callBack) 
+const articalschema = new mongoose.Schema({
+    title : {
+        type: String,
+        required : true,
+        trim : true,
+        minlength:5 ,
+        maxlength :20
     },
-    getArticalById(id,callBack){
-         return pool.query('Call get_artical_by_id("'+id+'")',callBack) 
+    body :{
+        type : String ,
+        required : true,
+        minlength : 100 ,
+        maxlength : 1000
     },
-    addArtical(title,body,authorId,date,callBack){
-        return pool.query('Call add_artical("'+title+','+body+','+authorId+','+date+'")',callBack) 
+    author : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Author'
     },
-    addComment(comment , articalId ,userId , callBack){
-        return pool.query('Call add_comment("'+comment+','+articalId+','+userId+'")',callBack) 
+    date : {
+        type : Date , 
+        required : true,
+        default : Date.now
     },
-    thumbsUpArtical(userId ,articalId , callBack){
-        return pool.query('Call thumbs_up_artical("'+userId+','+articalId+'")',callBack) 
-    
+    likes : {
+        type : Number ,
+        default: 0
     }
-    
-    
-}
+})
 
+/* articalschema.statics.likeMe = async function(id){
+   const art = await this.find({_id:id})
+   if(!art) throw new Error('artical not existed')
 
-module.exports=Artical
+   else {
+       art.likes = art.likes + 1
+     
+       return art
+   }
+
+} */
+const Atrical = mongoose.model('Artical' , articalschema)
+module.exports=Atrical

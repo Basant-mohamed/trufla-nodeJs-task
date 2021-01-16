@@ -1,15 +1,18 @@
+const mongoose = require('mongoose')
 
-const pool = require('../db/mysql')
-var Author={
-   getAllAuthors(callBack) { 
-       return pool.query('Call get_all_authors()',callBack) 
+const authorSchema = new mongoose.Schema({
+    name : {
+        type: String,
+        required : true,
+        trim : true,
+        minlength:5 ,
     },
-    getAuthorById(id,callBack){
-         return pool.query('Call get_author_by_id("'+id+'")',callBack) 
-    },
-    addAuthor(authName,jobtilte,callBack){
-        return pool.query('Call add_author("'+authName+','+jobtilte+'")',callBack) 
+    jobTitle :{
+        type : String ,
+        required : true,
+        trim : true
     }
-    
-}
-module.exports = Author
+})
+
+const Author = mongoose.model('Author' , authorSchema)
+module.exports=Author

@@ -17,10 +17,13 @@
   },
   "homepage": "https://github.com/Basant-mohamed/trufla-nodeJs-task#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "config": "^3.3.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.11",
     "mysql": "^2.18.1"
   }
 }
