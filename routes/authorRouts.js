@@ -6,7 +6,8 @@ const joi = require('joi')
 
 const joiSchema = joi.object({
     name : joi.string().min(5).trim().required(),
-    jobTitle : joi.string().trim().required()
+    jobTitle : joi.string().trim().required(),
+    pic : joi.string()
 })
 
 /* *********************************** Add new author ********************************/

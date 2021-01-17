@@ -9,7 +9,7 @@ const config = require('config')
 const joischema = joi.object({
     userName : joi.string().required().min(5),
     email : joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
-    password : joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6)
+    password : joi.string().required().min(6)
 
 })
 
@@ -44,7 +44,6 @@ router.post('/api/addUser' , async (req,res)=>{
 
 router.post('/api/login' , async (req,res)=>{
     try{
-        console.log(req.body)
         //check it is right email 
         const user = await User.findOne({email : req.body.email})
         if(!user) throw new Error('Can not find this user')
@@ -59,7 +58,8 @@ router.post('/api/login' , async (req,res)=>{
         if(!token) throw new Error('Can not generat token')
 
         // send the token in the response 
-        res.header('Authorization' ,token).send({token})
+        res.setHeader('authorization',token)
+        res.send({token})
 
     }
     catch(e){

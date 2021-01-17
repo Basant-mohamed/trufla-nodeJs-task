@@ -77,14 +77,15 @@ router.get('/api/getArtical' ,async  (req,res)=>{
 })
 
 /*********************************** Like certain artical *****************************/
-router.post('/api/addThumbsUp',auth, (req,res)=>{
+router.post('/api/addThumbsUp', (req,res)=>{
   
     // find the artical by ID
-       Artical.findOne({_id:req.body._id} ,async (err,result)=>{
+       Artical.findById({_id:req.body.id} ,async (err,result)=>{
                 if(err) throw new Error('Can Not find the Artical')
                 else  {
+                   
                     // increase the likes number with 1
-                    const updated = await Artical.findOneAndUpdate({_id:req.body._id},{likes : result.likes + 1} )
+                    const updated = await Artical.findOneAndUpdate({_id:req.body.id},{likes : result.likes + 1} )
                     if(!updated)  throw new Error('Can not like this artical')
                     res.status(200).send({flag : 1})
                 }
@@ -92,4 +93,21 @@ router.post('/api/addThumbsUp',auth, (req,res)=>{
    
    
     })
+/********************************* UnLike the Artical **************************  */
+    router.post('/api/addThumbsDown', (req,res)=>{
+  
+        // find the artical by ID
+           Artical.findById({_id:req.body.id} ,async (err,result)=>{
+                    if(err) throw new Error('Can Not find the Artical')
+                    else  {
+                       
+                        // decrease the likes number with 1
+                        const updated = await Artical.findOneAndUpdate({_id:req.body.id},{likes : result.likes - 1} )
+                        if(!updated)  throw new Error('Can not like this artical')
+                        res.status(200).send({flag : 1})
+                    }
+           })
+       
+       
+        })
 module.exports = router

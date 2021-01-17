@@ -4,7 +4,7 @@ const config = require('config') // use it to get teh env var which hold the key
 function auth (req,res,next){
     const token  = req.header('Authorization').replace('Bearer ','')
     if(!token) return res.status(401).send('User not Login')
-
+console.log(token)
     try{
     const decodedId = jwt.verify(token , config.get('jwtPrivateKey'))
     if(!decodedId) throw new Error('Wrong token')
